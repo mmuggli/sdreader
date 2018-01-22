@@ -8,6 +8,8 @@ SDIter::SDIter(const char* fname) : lr(LowReader(fname)), hr(HighReader(fname))
 
 signed long long SDIter::peek()
 {
+    if (peeked) return last_peeked;
+    
     if (lowndx >= lr.get_size()) {
         return -1;
     }
@@ -23,9 +25,10 @@ signed long long SDIter::peek()
     next_cur_high += high_increment;
     size_t low = lr[lowndx];
     
-    peeked = true;
     size_t one_loc = (next_cur_high << lr.get_wl()) | low; // '1' location
+    peeked = true;
 
+    last_peeked = one_loc;
     return one_loc;
     
     

@@ -37,6 +37,7 @@ private:
     size_t cur_high = 0; // accumulated (i.e. non-delta) value of the position of the last 1 instance
     size_t next_cur_high = 0; // if peek() has been called, accumulated (i.e. non-delta) value of the position of the peeked 1 instance
     bool peeked = false;
+    signed long long last_peeked = -1;
 
     LowReader lr;
     HighReader hr;

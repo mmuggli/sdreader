@@ -1,5 +1,7 @@
 #include "LowReader.h"
 #include "HighReader.h"
+#include "SDIter.h"
+
 #include <sdsl/sd_vector.hpp>
 #include <iostream>
 #include <rapidcheck.h>
@@ -20,6 +22,21 @@ bool samehighcheck(const sdsl::sd_vector<> &sd, HighReader* hr)
 {
     for (size_t i = 0; i < sd.high.size(); i++) {
         if (sd.high[i] != (*hr)[i]) return false;
+    }
+    return true;
+
+}
+
+bool samesdcheck(const sdsl::sd_vector<> &sd, SDIter* sdi)
+{
+    for (size_t i = 0; i < sd.size(); i++) {
+        if (sd[i]) {
+            if (i != sdi->peek()) {
+                return false;
+            } else {
+                sdi->advance();
+            }
+        }
     }
     return true;
 
@@ -53,7 +70,9 @@ int main()
                   
                   LowReader* lr = new LowReader("rc_sd_vector.bin");
                   HighReader* hr = new HighReader("rc_sd_vector.bin");
-              
+
+                  SDIter* sdi = new SDIter("rc_sd_vector.bin");
+                  
               //std::reverse(begin(l1), end(l1));
               //std::reverse(begin(l1), end(l1));
                   
@@ -64,9 +83,11 @@ int main()
 
                   // check they have the same values
                   RC_ASSERT(samelowcheck(sd, lr));
-                  RC_ASSERT(samehighcheck(sd, hr));          
+                  RC_ASSERT(samehighcheck(sd, hr));
+                  RC_ASSERT(samesdcheck(sd, sdi));
                   delete lr;
                   delete hr;
+                  delete sdi;
             });
 
 //    if (false)
@@ -102,21 +123,22 @@ int main()
                   
                       LowReader* lr = new LowReader("rc_sd_vector.bin");
                       HighReader* hr = new HighReader("rc_sd_vector.bin");
-              
+                      SDIter* sdi = new SDIter("rc_sd_vector.bin");
                       //std::reverse(begin(l1), end(l1));
                       //std::reverse(begin(l1), end(l1));
                   
                       // check they (the low parts) are the same size
                       RC_ASSERT(lr->get_size() == sd.low.size());
                       RC_ASSERT(hr->get_size() == sd.high.size());
-                                
                       // check they have the same values
                       RC_ASSERT(samelowcheck(sd, lr));
-                      RC_ASSERT(samehighcheck(sd, hr));         
+                      RC_ASSERT(samehighcheck(sd, hr));
+                      RC_ASSERT(samesdcheck(sd, sdi));     
+                                            
                       delete lr;
                       delete hr;
+                      delete sdi;
 
-                      RC_ASSERT(true);
 
             });
 

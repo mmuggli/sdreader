@@ -11,6 +11,7 @@ public:
     signed long long peek(); 
 
     void advance();
+    size_t size() { return lr.get_size();}
 
 
 

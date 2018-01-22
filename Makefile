@@ -12,7 +12,7 @@ LowReader.o: LowReader.cpp LowReader.h
 	g++ -g LowReader.cpp -c -o LowReader.o
 
 HighReader.o: HighReader.cpp HighReader.h
-	g++ -g $(INCDIR) $(LIBDIR) HighReader.cpp -lsdsl   -c -o HighReader.o
+	g++ -g  HighReader.cpp    -c -o HighReader.o
 
 clean:
 	rm LowReader.o HighReader.o test

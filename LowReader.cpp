@@ -1,6 +1,17 @@
 #include "LowReader.h"
 #include <iostream>
 #include <cassert>
+
+static void dump_word(uint64_t w)
+{
+
+    for (int64_t i = 63; i >= 0; i--) {
+        bool bit = ((uint64_t)1<<(uint64_t)i) & w;
+        std::cout << bit ;
+    }
+}
+
+
 LowReader::LowReader(const char* fname) : f(std::ifstream(fname))
 {
     
@@ -61,8 +72,12 @@ uint64_t LowReader::operator[](std::size_t i)
 
         next_qword();
         // msb portion
-        uint64_t bits_needed = msbit % 64;
+        uint64_t bits_needed = (1+msbit) % 64;
+        //std::cout << "bitsneeded: " << bits_needed << std::endl;
         mask = (1 << bits_needed) - 1;
+        // std::cout << "mask: " ;
+        // dump_word(mask);
+        // std::cout << std::endl;
         uint64_t upper = (qword & mask) << (m_width - bits_needed);
 
         return upper | lower;
@@ -70,20 +85,12 @@ uint64_t LowReader::operator[](std::size_t i)
 
 }
 
-static void dump_word(uint64_t w)
-{
-
-    for (int64_t i = 63; i >= 0; i--) {
-        bool bit = ((uint64_t)1<<(uint64_t)i) & w;
-        std::cout << bit ;
-    }
-}
 
 void LowReader::next_qword()
 {
     current_qword_index++;
     f.read((char*)&qword, sizeof(qword));
-    // dump_word(qword);
-    // std::cout << " from file" << std::endl;
+    //dump_word(qword);
+     //std::cout << " from file" << std::endl;
     current_bit_index_in_qword = 0;
 }

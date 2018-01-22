@@ -1,4 +1,5 @@
 #include "LowReader.h"
+#include "HighReader.h"
 #include <sdsl/sd_vector.hpp>
 #include <iostream>
 #include <rapidcheck.h>
@@ -6,7 +7,7 @@
 #include <vector>
 #include <algorithm>
 
-bool samecheck(const sdsl::sd_vector<> &sd, LowReader* lr)
+bool samelowcheck(const sdsl::sd_vector<> &sd, LowReader* lr)
 {
     for (size_t i = 0; i < sd.low.size(); i++) {
         if (sd.low[i] != (*lr)[i]) return false;
@@ -15,10 +16,19 @@ bool samecheck(const sdsl::sd_vector<> &sd, LowReader* lr)
 
 }
 
+bool samehighcheck(const sdsl::sd_vector<> &sd, HighReader* hr)
+{
+    for (size_t i = 0; i < sd.high.size(); i++) {
+        if (sd.high[i] != (*hr)[i]) return false;
+    }
+    return true;
+
+}
+
 int main()
 {
     //if (false)
-    rc::check("bools: Serializing and streaming back an sd_vector have same /low/ Elias-Fano vector",
+    rc::check("bools: Serializing and streaming back an sd_vector have same Elias-Fano vector components",
             [](const std::vector<bool> &l0) {
                   // auto l1 = l0;
 
@@ -42,21 +52,25 @@ int main()
                   load_from_file(loaded_sd, "rc_sd_vector.bin");
                   
                   LowReader* lr = new LowReader("rc_sd_vector.bin");
-                  
+                  HighReader* hr = new HighReader("rc_sd_vector.bin");
               
               //std::reverse(begin(l1), end(l1));
               //std::reverse(begin(l1), end(l1));
                   
                   // check they (the low parts) are the same size
                   RC_ASSERT(lr->get_size() == sd.low.size());
+                  RC_ASSERT(hr->get_size() == sd.high.size());
+                            
 
                   // check they have the same values
-                  RC_ASSERT(samecheck(sd, lr));
+                  RC_ASSERT(samelowcheck(sd, lr));
+                  RC_ASSERT(samehighcheck(sd, hr));          
                   delete lr;
+                  delete hr;
             });
 
-    //if (false)
-    rc::check("ints: Serializing and streaming back an sd_vector have same /low/ Elias-Fano vector",
+//    if (false)
+    rc::check("ints: Serializing and streaming back an sd_vector have same Elias-Fano vector components",
             [](const std::vector<uint16_t> &l0) {
                   //RC_PRE(l0.size() >= 3);
                       auto l1 = l0;
@@ -87,30 +101,34 @@ int main()
                       load_from_file(loaded_sd, "rc_sd_vector.bin");
                   
                       LowReader* lr = new LowReader("rc_sd_vector.bin");
-                  
+                      HighReader* hr = new HighReader("rc_sd_vector.bin");
               
                       //std::reverse(begin(l1), end(l1));
                       //std::reverse(begin(l1), end(l1));
                   
                       // check they (the low parts) are the same size
                       RC_ASSERT(lr->get_size() == sd.low.size());
-
+                      RC_ASSERT(hr->get_size() == sd.high.size());
+                                
                       // check they have the same values
-                      RC_ASSERT(samecheck(sd, lr));
+                      RC_ASSERT(samelowcheck(sd, lr));
+                      RC_ASSERT(samehighcheck(sd, hr));         
                       delete lr;
+                      delete hr;
 
                       RC_ASSERT(true);
 
             });
 
     std::cout << "----- manual testing -------" << std::endl;
-    sdsl::bit_vector bv = {1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1};
-    bv.resize(256);
+    //sdsl::bit_vector bv = {1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1};
+    sdsl::bit_vector bv = {1,1,1,1,1,1,1,1,1,0};
+    //bv.resize(256);
     
     //sdsl::util::set_to_value(bv, 0);
-    for(int i = 17; i < 256; i++) {
-        bv[i] = 0;
-    }
+    // for(int i = 17; i < 256; i++) {
+    //     bv[i] = 0;
+    // }
     sdsl::sd_vector<> sd(bv);
     std::ofstream f("msd_vector.bin");
     sd.serialize(f);
@@ -122,7 +140,9 @@ int main()
     for (size_t i = 0; i < l.get_size(); i++ ) {
         std::cout << i << " : " << l[i] << std::endl;
     }
-    //    std::cout << "samecheck = " << samecheck(sd, &l) << std::endl;
+    HighReader h("msd_vector.bin");
+    std::cout << "high read, orig sizes: " << h.get_size() << ", " << sd.high.size() << std::endl;
+    //    std::cout << "samelowcheck = " << samelowcheck(sd, &l) << std::endl;
     
 
     return 0;

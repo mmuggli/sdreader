@@ -1,21 +1,21 @@
 INCDIR=-I/home/muggli/git/cosmo/3rd_party_inst/include -I../rapidcheck/include
 LIBDIR=-L../rapidcheck  -L/home/muggli/git/cosmo/3rd_party_inst/lib 
-
+CPP_FLAGS=-std=c++11 -O2 -march=native
 all: LowReader.o HighReader.o SDIter.o test
 
 
 test: test.cpp LowReader.o HighReader.o SDIter.o
-	g++ -std=c++11 -march=native -Wall -Wextra -DNDEBUG -g $(INCDIR) $(LIBDIR) test.cpp LowReader.o HighReader.o SDIter.o  -lsdsl  -lrapidcheck -o test
+	g++ $(CPP_FLAGS) -Wall -Wextra -DNDEBUG  $(INCDIR) $(LIBDIR) test.cpp LowReader.o HighReader.o SDIter.o  -lsdsl  -lrapidcheck -o test
 
 
 LowReader.o: LowReader.cpp LowReader.h
-	g++ -g LowReader.cpp -c -o LowReader.o
+	g++ $(CPP_FLAGS) LowReader.cpp -c -o LowReader.o
 
 HighReader.o: HighReader.cpp HighReader.h
-	g++ -g  HighReader.cpp    -c -o HighReader.o
+	g++ $(CPP_FLAGS)  HighReader.cpp    -c -o HighReader.o
 
 SDIter.o: SDIter.cpp SDIter.h
-	g++ -g  SDIter.cpp    -c -o SDIter.o
+	g++ $(CPP_FLAGS)  SDIter.cpp    -c -o SDIter.o
 
 clean:
 	rm LowReader.o HighReader.o SDIter.o test

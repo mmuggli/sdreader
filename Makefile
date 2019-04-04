@@ -1,5 +1,5 @@
-INCDIR=-I/home/muggli/git/cosmo/3rd_party_inst/include -I../rapidcheck/include
-LIBDIR=-L../rapidcheck  -L/home/muggli/git/cosmo/3rd_party_inst/lib 
+INCDIR=-I../../3rd_party_inst/include -I../rapidcheck/include
+LIBDIR=-L../rapidcheck  -L../../3rd_party_inst/lib -L../../3rd_party_inst/lib64 
 CPP_FLAGS=-std=c++11 -O2 -march=native
 all: LowReader.o HighReader.o SDIter.o test
 
